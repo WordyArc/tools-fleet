@@ -1,7 +1,24 @@
 <idea-plugin>
     <id>dev.ashenarx.tools.fleet</id>
-    <name>Tools Fleet</name>
+    <name>Tool Finder</name>
     <vendor email="ashenarx@gmail.com" url="https://github.com/WordyArc">ashenarx</vendor>
+    <description><![CDATA[
+        Search and open every available IDE tool window from a single keyboard-driven popup.
+        Open the popup with <kbd>Ctrl+Shift+T</kbd> (<kbd>Cmd+Shift+T</kbd> on macOS), type to filter the list, and use
+        <kbd>Up</kbd>, <kbd>Down</kbd>, and <kbd>Enter</kbd> to activate a tool window.
+    ]]></description>
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.compose</depends>
     <resource-bundle>messages.ToolsFleetBundle</resource-bundle>
+
+    <actions>
+        <action id="ToolsFleet.ShowToolWindows"
+                class="dev.ashenarx.tools.fleet.ShowToolWindowsAction"
+                text="Tool Windows"
+                description="Search and open IDE tool windows">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift T"/>
+        </action>
+    </actions>
 </idea-plugin>

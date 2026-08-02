@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlinCompose)
     alias(libs.plugins.intellijPlatform)
 }
 
@@ -8,6 +9,10 @@ version = providers.gradleProperty("pluginVersion").get()
 
 kotlin {
     jvmToolchain(providers.gradleProperty("javaVersion").get().toInt())
+
+    compilerOptions {
+        optIn.add("org.jetbrains.jewel.foundation.ExperimentalJewelApi")
+    }
 }
 
 repositories {
@@ -28,7 +33,6 @@ intellijPlatform {
     pluginConfiguration {
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
 }
