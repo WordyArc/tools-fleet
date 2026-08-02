@@ -196,7 +196,7 @@ private fun ToolWindowRow(item: ToolWindowItem, selected: Boolean, onClick: () -
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(32.dp)
+            .height(JewelTheme.globalMetrics.rowHeight)
             .padding(horizontal = 2.dp)
             .background(background, RoundedCornerShape(style.metrics.selectionBackgroundCornerSize))
             .hoverable(interactionSource)
