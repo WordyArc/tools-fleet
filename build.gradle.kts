@@ -1,21 +1,34 @@
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
-
 plugins {
-    id("org.jetbrains.kotlin.jvm")
-    id("org.jetbrains.changelog")
-    id("org.jetbrains.intellij.platform")
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.intellijPlatform)
 }
 
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
-dependencies {
-    testImplementation(libs.junit)
+group = providers.gradleProperty("pluginGroup").get()
+version = providers.gradleProperty("pluginVersion").get()
 
-    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
+kotlin {
+    jvmToolchain(providers.gradleProperty("javaVersion").get().toInt())
+}
+
+repositories {
+    mavenCentral()
     intellijPlatform {
-        intellijIdea("2025.3.5")
-        testFramework(TestFrameworkType.Platform)
+        defaultRepositories()
+    }
+}
 
-        // Add plugin dependencies for compilation here, for example:
-        // bundledPlugin("com.intellij.java")
+dependencies {
+    intellijPlatform {
+        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+        composeUI()
+    }
+}
+
+intellijPlatform {
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild = providers.gradleProperty("pluginSinceBuild")
+            untilBuild = providers.gradleProperty("pluginUntilBuild")
+        }
     }
 }
