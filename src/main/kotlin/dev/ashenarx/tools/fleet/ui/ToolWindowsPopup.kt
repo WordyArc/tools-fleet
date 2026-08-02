@@ -45,6 +45,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.ashenarx.tools.fleet.ToolWindowItem
+import dev.ashenarx.tools.fleet.ToolWindowMatcher
 import dev.ashenarx.tools.fleet.ToolsFleetBundle
 import org.jetbrains.jewel.bridge.retrieveColorOrNull
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -66,10 +67,11 @@ internal fun ToolWindowsPopup(
     val query = search.text.toString()
     val filtered = remember(items, query) { items.filterAndRank(query) }
     val rows = remember(filtered) { filtered.toRows() }
-    var selectedId by remember { mutableStateOf(filtered.firstOrNull()?.id) }
+    val displayedItems = remember(rows) { rows.mapNotNull { (it as? PopupRow.Item)?.value } }
+    var selectedId by remember { mutableStateOf(displayedItems.firstOrNull()?.id) }
 
-    LaunchedEffect(filtered) {
-        if (filtered.none { it.id == selectedId }) selectedId = filtered.firstOrNull()?.id
+    LaunchedEffect(query, displayedItems) {
+        selectedId = displayedItems.firstOrNull()?.id
     }
 
     val focusRequester = remember { FocusRequester() }
@@ -95,12 +97,12 @@ internal fun ToolWindowsPopup(
 
                     when (event.key) {
                         Key.DirectionDown -> {
-                            selectedId = filtered.moveSelection(selectedId, 1)
+                            selectedId = displayedItems.moveSelection(selectedId, 1)
                             true
                         }
 
                         Key.DirectionUp -> {
-                            selectedId = filtered.moveSelection(selectedId, -1)
+                            selectedId = displayedItems.moveSelection(selectedId, -1)
                             true
                         }
 
@@ -147,7 +149,10 @@ private fun ToolWindowRows(
     val listState = rememberLazyListState()
     LaunchedEffect(rows, selectedId) {
         val index = rows.indexOfFirst { it is PopupRow.Item && it.value.id == selectedId }
-        if (index >= 0) listState.animateScrollToItem(index)
+        val visibleItems = listState.layoutInfo.visibleItemsInfo
+        if (index >= 0 && visibleItems.isNotEmpty() && visibleItems.none { it.index == index }) {
+            listState.animateScrollToItem(index)
+        }
     }
 
     LazyColumn(state = listState, modifier = modifier) {
@@ -255,38 +260,21 @@ private fun List<ToolWindowItem>.toRows(): List<PopupRow> = buildList {
 }
 
 private fun List<ToolWindowItem>.filterAndRank(query: String): List<ToolWindowItem> {
-    val normalized = query.trim().lowercase()
-    if (normalized.isEmpty()) return this
+    if (query.isBlank()) return this
+    val matcher = ToolWindowMatcher(query)
 
-    return mapNotNull { item -> item.matchScore(normalized)?.let { score -> item to score } }
-        .sortedWith(compareBy<Pair<ToolWindowItem, Int>> { it.second }
-            .thenBy(String.CASE_INSENSITIVE_ORDER) { it.first.title })
+    return mapNotNull { item -> matcher.degreeOrNull(item.searchText)?.let { degree -> item to degree } }
+        .sortedByDescending(Pair<ToolWindowItem, Int>::second)
         .map(Pair<ToolWindowItem, Int>::first)
 }
 
-private fun ToolWindowItem.matchScore(query: String): Int? {
-    val title = title.lowercase()
-    val id = id.lowercase()
-    return when {
-        title == query -> 0
-        title.startsWith(query) -> 1
-        title.contains(query) -> 2
-        id.contains(query) -> 3
-        query.isSubsequenceOf(title) -> 4
-        else -> null
-    }
-}
-
-private fun String.isSubsequenceOf(value: String): Boolean {
-    var index = 0
-    for (character in value) {
-        if (character == this[index] && ++index == length) return true
-    }
-    return false
-}
+private val ToolWindowItem.searchText: String
+    get() = "$title $id"
 
 private fun List<ToolWindowItem>.moveSelection(currentId: String?, delta: Int): String? {
     if (isEmpty()) return null
-    val current = indexOfFirst { it.id == currentId }.takeIf { it >= 0 } ?: if (delta > 0) -1 else 0
-    return this[Math.floorMod(current + delta, size)].id
+    val current = indexOfFirst { it.id == currentId }
+    if (current < 0) return first().id
+
+    return this[(current + delta).coerceIn(0, lastIndex)].id
 }
