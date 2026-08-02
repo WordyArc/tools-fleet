@@ -11,6 +11,14 @@
     <depends>com.intellij.modules.compose</depends>
     <resource-bundle>messages.ToolsFleetBundle</resource-bundle>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable parentId="tools"
+                                 instance="dev.ashenarx.tools.fleet.settings.ToolFinderConfigurable"
+                                 id="dev.ashenarx.tools.fleet.settings"
+                                 key="settings.title"
+                                 bundle="messages.ToolsFleetBundle"/>
+    </extensions>
+
     <actions>
         <action id="ToolsFleet.ShowToolWindows"
                 class="dev.ashenarx.tools.fleet.ShowToolWindowsAction"

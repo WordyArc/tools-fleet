@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -68,10 +69,11 @@ internal fun ToolWindowsPopup(
     val filtered = remember(items, query) { items.filterAndRank(query) }
     val rows = remember(filtered) { filtered.toRows() }
     val displayedItems = remember(rows) { rows.mapNotNull { (it as? PopupRow.Item)?.value } }
-    var selectedId by remember { mutableStateOf(displayedItems.firstOrNull()?.id) }
+    val selectableItems = remember(displayedItems) { displayedItems.filter(ToolWindowItem::isAvailable) }
+    var selectedId by remember { mutableStateOf(selectableItems.firstOrNull()?.id) }
 
-    LaunchedEffect(query, displayedItems) {
-        selectedId = displayedItems.firstOrNull()?.id
+    LaunchedEffect(query, selectableItems) {
+        selectedId = selectableItems.firstOrNull()?.id
     }
 
     val focusRequester = remember { FocusRequester() }
@@ -97,12 +99,12 @@ internal fun ToolWindowsPopup(
 
                     when (event.key) {
                         Key.DirectionDown -> {
-                            selectedId = displayedItems.moveSelection(selectedId, 1)
+                            selectedId = selectableItems.moveSelection(selectedId, 1)
                             true
                         }
 
                         Key.DirectionUp -> {
-                            selectedId = displayedItems.moveSelection(selectedId, -1)
+                            selectedId = selectableItems.moveSelection(selectedId, -1)
                             true
                         }
 
@@ -162,7 +164,7 @@ private fun ToolWindowRows(
                 is PopupRow.Item -> ToolWindowRow(
                     item = row.value,
                     selected = row.value.id == selectedId,
-                    onClick = { onSelect(row.value.id) },
+                    onClick = { if (row.value.isAvailable) onSelect(row.value.id) },
                 )
             }
         }
@@ -189,7 +191,7 @@ private fun ToolWindowRow(item: ToolWindowItem, selected: Boolean, onClick: () -
         ?: selectedBackground.copy(alpha = 0.4f)
     val background = when {
         selected -> selectedBackground
-        hovered -> hoverBackground
+        hovered && item.isAvailable -> hoverBackground
         else -> Color.Transparent
     }
 
@@ -197,10 +199,16 @@ private fun ToolWindowRow(item: ToolWindowItem, selected: Boolean, onClick: () -
         modifier = Modifier
             .fillMaxWidth()
             .height(JewelTheme.globalMetrics.rowHeight)
+            .alpha(if (item.isAvailable) 1f else 0.5f)
             .padding(horizontal = 2.dp)
             .background(background, RoundedCornerShape(style.metrics.selectionBackgroundCornerSize))
-            .hoverable(interactionSource)
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+            .hoverable(interactionSource, enabled = item.isAvailable)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = item.isAvailable,
+                onClick = onClick,
+            )
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

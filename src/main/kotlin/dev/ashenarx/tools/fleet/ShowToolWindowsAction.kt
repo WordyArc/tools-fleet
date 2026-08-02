@@ -4,6 +4,7 @@ package dev.ashenarx.tools.fleet
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -12,6 +13,7 @@ import com.intellij.openapi.wm.WindowManager
 import dev.ashenarx.tools.fleet.ui.DEFAULT_POPUP_SIZE
 import dev.ashenarx.tools.fleet.ui.ToolWindowsPopup
 import dev.ashenarx.tools.fleet.ui.popupSizeFor
+import dev.ashenarx.tools.fleet.settings.ToolFinderSettings
 import org.jetbrains.jewel.bridge.JewelComposePanel
 import org.jetbrains.jewel.bridge.theme.SwingBridgeTheme
 import javax.swing.JComponent
@@ -33,15 +35,17 @@ class ShowToolWindowsAction : DumbAwareAction() {
         }
 
         val manager = ToolWindowManager.getInstance(project)
+        val showUnavailable = service<ToolFinderSettings>().showUnavailableToolWindows
         val items = manager.toolWindowIds
             .mapNotNull(manager::getToolWindow)
-            .filter { it.isAvailable }
+            .filter { it.isAvailable || showUnavailable }
             .map { toolWindow ->
                 ToolWindowItem(
                     id = toolWindow.id,
                     title = toolWindow.stripeTitle.ifBlank { toolWindow.id },
                     icon = toolWindow.icon,
-                    isOpen = toolWindow.contentManagerIfCreated != null,
+                    isOpen = toolWindow.isAvailable && toolWindow.contentManagerIfCreated != null,
+                    isAvailable = toolWindow.isAvailable,
                 )
             }
             .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, ToolWindowItem::title))
