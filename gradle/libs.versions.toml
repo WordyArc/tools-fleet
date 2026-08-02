@@ -1,6 +1,15 @@
 [versions]
 kotlin = "2.4.10"
 intellijPlatform = "2.18.1"
+lifecycle = "2.9.6"
+junit = "6.1.2"
+junit4 = "4.13.2"
+
+[libraries]
+lifecycleViewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-desktop", version.ref = "lifecycle" }
+junitJupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

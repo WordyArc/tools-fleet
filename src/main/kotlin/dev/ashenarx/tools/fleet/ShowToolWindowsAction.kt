@@ -2,6 +2,10 @@
 
 package dev.ashenarx.tools.fleet
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
@@ -54,17 +58,22 @@ class ShowToolWindowsAction : DumbAwareAction() {
         val popupSize = windowSize?.let(::popupSizeFor) ?: DEFAULT_POPUP_SIZE
         var selectedId: String? = null
         var popup: JBPopup? = null
+        val viewModelStoreOwner = object : ViewModelStoreOwner {
+            override val viewModelStore = ViewModelStore()
+        }
 
         val panel = JewelComposePanel {
-            SwingBridgeTheme {
-                ToolWindowsPopup(
-                    items = items,
-                    onClose = { popup?.cancel() },
-                    onSelect = { id ->
-                        selectedId = id
-                        popup?.cancel()
-                    },
-                )
+            CompositionLocalProvider(LocalViewModelStoreOwner provides viewModelStoreOwner) {
+                SwingBridgeTheme {
+                    ToolWindowsPopup(
+                        items = items,
+                        onClose = { popup?.cancel() },
+                        onSelect = { id ->
+                            selectedId = id
+                            popup?.cancel()
+                        },
+                    )
+                }
             }
         }.apply {
             preferredSize = popupSize
@@ -74,6 +83,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
             activePopup = created
             created.setFinalRunnable {
                 if (activePopup === created) activePopup = null
+                viewModelStoreOwner.viewModelStore.clear()
                 selectedId?.let { manager.getToolWindow(it)?.activate(null) }
             }
             created.showCenteredInCurrentWindow(project)

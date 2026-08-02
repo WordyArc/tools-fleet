@@ -25,10 +25,10 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -45,8 +45,8 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.ashenarx.tools.fleet.ToolWindowItem
-import dev.ashenarx.tools.fleet.ToolWindowMatcher
 import dev.ashenarx.tools.fleet.ToolsFleetBundle
 import org.jetbrains.jewel.bridge.retrieveColorOrNull
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -64,16 +64,13 @@ internal fun ToolWindowsPopup(
     onClose: () -> Unit,
     onSelect: (String) -> Unit,
 ) {
+    val viewModel = viewModel { ToolWindowsPopupViewModel(items) }
+    val uiState by viewModel.uiState.collectAsState()
     val search = rememberTextFieldState()
-    val query = search.text.toString()
-    val filtered = remember(items, query) { items.filterAndRank(query) }
-    val rows = remember(filtered) { filtered.toRows() }
-    val displayedItems = remember(rows) { rows.mapNotNull { (it as? PopupRow.Item)?.value } }
-    val selectableItems = remember(displayedItems) { displayedItems.filter(ToolWindowItem::isAvailable) }
-    var selectedId by remember { mutableStateOf(selectableItems.firstOrNull()?.id) }
+    val rows = remember(uiState.activeItems, uiState.newItems) { uiState.toRows() }
 
-    LaunchedEffect(query, selectableItems) {
-        selectedId = selectableItems.firstOrNull()?.id
+    LaunchedEffect(search, viewModel) {
+        snapshotFlow { search.text.toString() }.collect(viewModel::setQuery)
     }
 
     val focusRequester = remember { FocusRequester() }
@@ -99,17 +96,17 @@ internal fun ToolWindowsPopup(
 
                     when (event.key) {
                         Key.DirectionDown -> {
-                            selectedId = selectableItems.moveSelection(selectedId, 1)
+                            viewModel.moveSelection(1)
                             true
                         }
 
                         Key.DirectionUp -> {
-                            selectedId = selectableItems.moveSelection(selectedId, -1)
+                            viewModel.moveSelection(-1)
                             true
                         }
 
                         Key.Enter -> {
-                            selectedId?.let(onSelect)
+                            uiState.selectedId?.let(onSelect)
                             true
                         }
 
@@ -123,7 +120,7 @@ internal fun ToolWindowsPopup(
                 },
         )
 
-        if (rows.isEmpty()) {
+        if (uiState.isEmpty) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = ToolsFleetBundle.message("popup.empty"),
@@ -133,7 +130,7 @@ internal fun ToolWindowsPopup(
         } else {
             ToolWindowRows(
                 rows = rows,
-                selectedId = selectedId,
+                selectedId = uiState.selectedId,
                 onSelect = onSelect,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -253,36 +250,13 @@ private sealed interface PopupRow {
     }
 }
 
-private fun List<ToolWindowItem>.toRows(): List<PopupRow> = buildList {
-    val active = filter(ToolWindowItem::isOpen)
-    val inactive = filterNot(ToolWindowItem::isOpen)
-
-    if (active.isNotEmpty()) {
+private fun ToolWindowsUiState.toRows(): List<PopupRow> = buildList {
+    if (activeItems.isNotEmpty()) {
         add(PopupRow.Section(ToolsFleetBundle.message("popup.section.active")))
-        active.mapTo(this, PopupRow::Item)
+        activeItems.mapTo(this, PopupRow::Item)
     }
-    if (inactive.isNotEmpty()) {
+    if (newItems.isNotEmpty()) {
         add(PopupRow.Section(ToolsFleetBundle.message("popup.section.new")))
-        inactive.mapTo(this, PopupRow::Item)
+        newItems.mapTo(this, PopupRow::Item)
     }
-}
-
-private fun List<ToolWindowItem>.filterAndRank(query: String): List<ToolWindowItem> {
-    if (query.isBlank()) return this
-    val matcher = ToolWindowMatcher(query)
-
-    return mapNotNull { item -> matcher.degreeOrNull(item.searchText)?.let { degree -> item to degree } }
-        .sortedByDescending(Pair<ToolWindowItem, Int>::second)
-        .map(Pair<ToolWindowItem, Int>::first)
-}
-
-private val ToolWindowItem.searchText: String
-    get() = "$title $id"
-
-private fun List<ToolWindowItem>.moveSelection(currentId: String?, delta: Int): String? {
-    if (isEmpty()) return null
-    val current = indexOfFirst { it.id == currentId }
-    if (current < 0) return first().id
-
-    return this[(current + delta).coerceIn(0, lastIndex)].id
 }
