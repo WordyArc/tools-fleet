@@ -14,11 +14,11 @@ import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.WindowManager
+import dev.ashenarx.tools.fleet.settings.ToolFinderSettings
 import dev.ashenarx.tools.fleet.ui.DEFAULT_POPUP_SIZE
 import dev.ashenarx.tools.fleet.ui.ToolWindowsPopup
 import dev.ashenarx.tools.fleet.ui.popupSizeFor
-import dev.ashenarx.tools.fleet.settings.ToolFinderSettings
-import org.jetbrains.jewel.bridge.JewelComposePanel
+import org.jetbrains.jewel.bridge.compose
 import org.jetbrains.jewel.bridge.theme.SwingBridgeTheme
 import javax.swing.JComponent
 
@@ -62,7 +62,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
             override val viewModelStore = ViewModelStore()
         }
 
-        val panel = JewelComposePanel {
+        val panel = compose {
             CompositionLocalProvider(LocalViewModelStoreOwner provides viewModelStoreOwner) {
                 SwingBridgeTheme {
                     ToolWindowsPopup(
