@@ -48,7 +48,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
                     id = toolWindow.id,
                     title = toolWindow.stripeTitle.ifBlank { toolWindow.id },
                     icon = toolWindow.icon,
-                    isOpen = toolWindow.isAvailable && toolWindow.contentManagerIfCreated != null,
+                    isVisible = toolWindow.isVisible,
                     isAvailable = toolWindow.isAvailable,
                 )
             }
@@ -68,6 +68,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
                     ToolWindowsPopup(
                         items = items,
                         onClose = { popup?.cancel() },
+                        onCloseToolWindow = { id -> manager.getToolWindow(id)?.hide() },
                         onSelect = { id ->
                             selectedId = id
                             popup?.cancel()

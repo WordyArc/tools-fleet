@@ -62,6 +62,7 @@ import javax.swing.Icon as SwingIcon
 internal fun ToolWindowsPopup(
     items: List<ToolWindowItem>,
     onClose: () -> Unit,
+    onCloseToolWindow: (String) -> Unit,
     onSelect: (String) -> Unit,
 ) {
     val viewModel = viewModel { ToolWindowsPopupViewModel(items) }
@@ -108,6 +109,15 @@ internal fun ToolWindowsPopup(
                         Key.Enter -> {
                             uiState.selectedId?.let(onSelect)
                             true
+                        }
+
+                        Key.Delete, Key.Backspace -> {
+                            if (search.text.isEmpty()) {
+                                viewModel.closeSelected()?.let(onCloseToolWindow)
+                                true
+                            } else {
+                                false
+                            }
                         }
 
                         Key.Escape -> {
