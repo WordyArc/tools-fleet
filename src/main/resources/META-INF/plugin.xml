@@ -1,12 +1,12 @@
 <idea-plugin>
-    <id>dev.ashenarx.tools.fleet</id>
+    <id>dev.ashenarx.tool.finder</id>
     <name>Tool Finder</name>
     <vendor email="ashenarx@gmail.com" url="https://github.com/WordyArc">ashenarx</vendor>
 
     <description><![CDATA[
         Find and open IDE tool windows from a keyboard-driven popup.<br/>
         <br/>
-        Press <kbd>Ctrl+&#92;</kbd> (<kbd>Cmd+&#92;</kbd> on macOS) to open Tool Finder, and again to close it.
+        Press <kbd>Ctrl+Alt+F2</kbd> (<kbd>Cmd+Opt+F2</kbd> on macOS) to open Tool Finder, and again to close it.
         Type to filter tool windows by name or ID. The list separates active, recent and new tool windows, and each
         row shows the tool window's own IDE shortcut when it has one.<br/>
         <br/>
@@ -49,7 +49,7 @@
                 text="Tool Finder"
                 description="Find and open IDE tool windows">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl BACK_SLASH"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F2"/>
         </action>
     </actions>
 </idea-plugin>

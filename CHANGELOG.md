@@ -5,7 +5,7 @@ The topmost section is published as the plugin's change notes.
 ## 1.0.0
 
 - Initial release.
-- <kbd>Ctrl+&#92;</kbd> (<kbd>Cmd+&#92;</kbd> on macOS) opens a popup listing active, recent and new tool windows.
+- <kbd>Ctrl+Alt+F2</kbd> (<kbd>Cmd+Opt+F2</kbd> on macOS) opens a popup with active, recent and new tool windows.
 - Type to filter tool windows by name or ID, with typo tolerance.
 - <kbd>Up</kbd>, <kbd>Down</kbd> and <kbd>Enter</kbd> select and activate a tool window.
 - <kbd>Enter</kbd> hides the tool window that currently has the focus, matching the behaviour of its own IDE shortcut.

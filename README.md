@@ -15,9 +15,9 @@
 
 Tool Finder is an IntelliJ Platform plugin for finding tool windows without navigating the IDE menus.
 
-Press <kbd>Ctrl</kbd>+<kbd>&#92;</kbd> (<kbd>Cmd</kbd>+<kbd>&#92;</kbd> on macOS), then type to filter tool windows by
-name. The list separates visible, previously opened and unopened tool windows, and each row shows the tool window's own
-IDE shortcut when it has one.
+Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F2</kbd> (<kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd>F2</kbd> on macOS), then type
+to filter tool windows by name. The list separates visible, previously opened and unopened tool windows, and each
+row shows the tool window's own IDE shortcut when it has one.
 
 ## Screenshots
 
@@ -27,16 +27,16 @@ IDE shortcut when it has one.
 
 ## Shortcuts
 
-| Key                                      | Action                                                           |
-|------------------------------------------|------------------------------------------------------------------|
-| <kbd>Ctrl</kbd>+<kbd>&#92;</kbd>         | Open or close Tool Finder                                        |
-| Type                                     | Filter tool windows by name or ID                                |
-| <kbd>Up</kbd> / <kbd>Down</kbd>          | Move the selection                                               |
-| <kbd>Enter</kbd>                         | Activate the selected tool window, or hide it when it is focused |
-| <kbd>Delete</kbd> / <kbd>Backspace</kbd> | Hide the selected active tool window when search is empty        |
-| <kbd>Esc</kbd>                           | Clear the search, then close the popup                           |
+| Key                                          | Action                                                           |
+|----------------------------------------------|------------------------------------------------------------------|
+| <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F2</kbd> | Open or close Tool Finder                                        |
+| Type                                         | Filter tool windows by name or ID                                |
+| <kbd>Up</kbd> / <kbd>Down</kbd>              | Move the selection                                               |
+| <kbd>Enter</kbd>                             | Activate the selected tool window, or hide it when it is focused |
+| <kbd>Delete</kbd> / <kbd>Backspace</kbd>     | Hide the selected active tool window when search is empty        |
+| <kbd>Esc</kbd>                               | Clear the search, then close the popup                           |
 
-On macOS, the default shortcut is <kbd>Cmd</kbd>+<kbd>&#92;</kbd>.
+On macOS, the default shortcut is <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd>F2</kbd>.
 
 ## Configuration
 
