@@ -21,9 +21,9 @@ IDE shortcut when it has one.
 
 ## Screenshots
 
-![Tool Finder popup placeholder](docs/images/popup.svg)
+![The Tool Finder popup listing active, recent and new tool windows](docs/images/popup.png)
 
-![Tool Finder search placeholder](docs/images/search.svg)
+![Filtering the list by typing, with the matched characters highlighted](docs/images/search.png)
 
 ## Shortcuts
 

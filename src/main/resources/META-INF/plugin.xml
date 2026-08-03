@@ -24,11 +24,11 @@
         The shortcut can be changed under <b>Settings | Keymap</b> by searching for <b>Tool Finder</b>. The action is
         also available from <b>Tools | Tool Finder</b>.<br/>
         <br/>
-        <img src="https://raw.githubusercontent.com/WordyArc/tools-fleet/master/docs/images/popup.svg"
-             alt="Tool Finder popup placeholder" width="640"/><br/>
+        <img src="https://raw.githubusercontent.com/WordyArc/tools-fleet/master/docs/images/popup.png"
+             alt="The Tool Finder popup listing active, recent and new tool windows" width="640"/><br/>
         <br/>
-        <img src="https://raw.githubusercontent.com/WordyArc/tools-fleet/master/docs/images/search.svg"
-             alt="Tool Finder search placeholder" width="640"/>
+        <img src="https://raw.githubusercontent.com/WordyArc/tools-fleet/master/docs/images/search.png"
+             alt="Filtering the list by typing, with the matched characters highlighted" width="640"/>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
