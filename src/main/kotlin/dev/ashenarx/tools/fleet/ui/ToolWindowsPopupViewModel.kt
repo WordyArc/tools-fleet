@@ -104,5 +104,5 @@ private fun List<ToolWindowItem>.moveSelection(currentId: String?, delta: Int): 
     val current = indexOfFirst { it.id == currentId }
     if (current < 0) return first().id
 
-    return this[(current + delta).coerceIn(0, lastIndex)].id
+    return this[Math.floorMod(current + delta, size)].id
 }

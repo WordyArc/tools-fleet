@@ -28,20 +28,20 @@ class ToolWindowsPopupViewModelTest {
     }
 
     @Test
-    fun `navigation skips unavailable items and does not wrap`() = timeoutRunBlocking {
+    fun `navigation skips unavailable items and wraps in both directions`() = timeoutRunBlocking {
         val active = item("active", isVisible = true)
         val unavailable = item("unavailable", isAvailable = false)
         val available = item("available")
         val viewModel = ToolWindowsPopupViewModel(listOf(unavailable, available, active))
 
-        viewModel.moveSelection(1)
+        viewModel.moveSelection(-1)
         assertEquals("available", viewModel.uiState.first { it.selectedId == "available" }.selectedId)
 
         viewModel.moveSelection(1)
-        assertEquals("available", viewModel.uiState.value.selectedId)
-
-        viewModel.moveSelection(-1)
         assertEquals("active", viewModel.uiState.first { it.selectedId == "active" }.selectedId)
+
+        viewModel.moveSelection(1)
+        assertEquals("available", viewModel.uiState.first { it.selectedId == "available" }.selectedId)
     }
 
     @Test
