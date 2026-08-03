@@ -43,12 +43,17 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.ashenarx.tools.fleet.ToolWindowItem
 import dev.ashenarx.tools.fleet.ToolsFleetBundle
 import org.jetbrains.jewel.bridge.retrieveColorOrNull
+import org.jetbrains.jewel.bridge.retrieveColorOrUnspecified
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
@@ -221,7 +226,20 @@ private fun ToolWindowRow(item: ToolWindowItem, selected: Boolean, onClick: () -
     ) {
         ToolWindowIcon(item.icon)
         Spacer(Modifier.width(8.dp))
-        Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+        val matchBackground = retrieveColorOrUnspecified("SearchMatch.startBackground")
+        val title = remember(item, matchBackground) { item.highlightedTitle(matchBackground) }
+        Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+private fun ToolWindowItem.highlightedTitle(background: Color): AnnotatedString {
+    if (titleHighlights.isEmpty()) return AnnotatedString(title)
+
+    val style = SpanStyle(background = background, fontWeight = FontWeight.Bold)
+    return buildAnnotatedString {
+        append(title)
+        titleHighlights.forEach { addStyle(style, it.first, it.last + 1) }
     }
 }
 

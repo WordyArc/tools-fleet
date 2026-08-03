@@ -54,8 +54,30 @@ class ToolWindowsPopupViewModelTest {
 
         viewModel.setQuery("alpha")
 
-        val state = viewModel.uiState.first { it.newItems == listOf(alpha) }
+        val state = viewModel.uiState.first { it.newItems.map(ToolWindowItem::id) == listOf("alpha") }
         assertEquals("alpha", state.selectedId)
+    }
+
+    @Test
+    fun `matched title fragments are highlighted`() = timeoutRunBlocking {
+        val viewModel = ToolWindowsPopupViewModel(listOf(item("Terminal"), item("Git")))
+
+        viewModel.setQuery("term")
+
+        val matched = viewModel.uiState.first { it.newItems.size == 1 }.newItems.single()
+        assertEquals("Terminal", matched.id)
+        assertEquals(listOf(0..3), matched.titleHighlights)
+    }
+
+    @Test
+    fun `fragments matched in the id are not highlighted in the title`() = timeoutRunBlocking {
+        val viewModel = ToolWindowsPopupViewModel(listOf(item("Debug", title = "Run"), item("Git")))
+
+        viewModel.setQuery("debug")
+
+        val matched = viewModel.uiState.first { it.newItems.size == 1 }.newItems.single()
+        assertEquals("Debug", matched.id)
+        assertEquals(emptyList<IntRange>(), matched.titleHighlights)
     }
 
     @Test

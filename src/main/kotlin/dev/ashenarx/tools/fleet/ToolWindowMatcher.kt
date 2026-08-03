@@ -8,12 +8,17 @@ internal class ToolWindowMatcher(query: String) {
     private val delegate: MinusculeMatcher? =
         query.toPatternOrNull()?.let { NameUtil.buildMatcher(it).typoTolerant().build() }
 
-    fun degreeOrNull(text: String): Int? {
+    fun matchOrNull(text: String): ToolWindowMatch? {
         val matcher = delegate ?: return null
         val fragments = matcher.match(text) ?: return null
-        return matcher.matchingDegree(text, false, fragments)
+        return ToolWindowMatch(
+            degree = matcher.matchingDegree(text, false, fragments),
+            highlights = fragments.map { it.startOffset until it.endOffset },
+        )
     }
 }
+
+internal data class ToolWindowMatch(val degree: Int, val highlights: List<IntRange>)
 
 private fun String.toPatternOrNull(): String? {
     if (isBlank()) return null

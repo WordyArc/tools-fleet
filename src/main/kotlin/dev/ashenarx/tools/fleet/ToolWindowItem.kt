@@ -9,4 +9,5 @@ internal data class ToolWindowItem(
     val isVisible: Boolean,
     val hasBeenOpened: Boolean,
     val isAvailable: Boolean,
+    val titleHighlights: List<IntRange> = emptyList(),
 )

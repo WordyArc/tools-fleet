@@ -91,13 +91,17 @@ private fun List<ToolWindowItem>.filterAndRank(query: String): List<ToolWindowIt
     if (query.isBlank()) return this
     val matcher = ToolWindowMatcher(query)
 
-    return mapNotNull { item -> matcher.degreeOrNull(item.searchText)?.let { degree -> item to degree } }
-        .sortedByDescending(Pair<ToolWindowItem, Int>::second)
-        .map(Pair<ToolWindowItem, Int>::first)
+    return mapNotNull { item -> matcher.matchOrNull(item.searchText)?.let { match -> item to match } }
+        .sortedByDescending { (_, match) -> match.degree }
+        .map { (item, match) -> item.copy(titleHighlights = match.highlights.clampTo(item.title.length)) }
 }
 
 private val ToolWindowItem.searchText: String
     get() = "$title $id"
+
+// Matching runs over "$title $id", so fragments landing in the id part are dropped before rendering.
+private fun List<IntRange>.clampTo(length: Int): List<IntRange> =
+    filter { it.first < length }.map { it.first..minOf(it.last, length - 1) }
 
 private fun List<ToolWindowItem>.moveSelection(currentId: String?, delta: Int): String? {
     if (isEmpty()) return null
