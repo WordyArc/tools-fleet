@@ -165,7 +165,7 @@ private fun ToolWindowRows(
         val index = rows.indexOfFirst { it is PopupRow.Item && it.value.id == selectedId }
         val visibleItems = listState.layoutInfo.visibleItemsInfo
         if (index >= 0 && visibleItems.isNotEmpty() && visibleItems.none { it.index == index }) {
-            listState.animateScrollToItem(index)
+            listState.scrollToItem(index)
         }
     }
 
