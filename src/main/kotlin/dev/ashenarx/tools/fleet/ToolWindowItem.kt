@@ -7,5 +7,6 @@ internal data class ToolWindowItem(
     val title: String,
     val icon: Icon?,
     val isVisible: Boolean,
+    val hasBeenOpened: Boolean,
     val isAvailable: Boolean,
 )

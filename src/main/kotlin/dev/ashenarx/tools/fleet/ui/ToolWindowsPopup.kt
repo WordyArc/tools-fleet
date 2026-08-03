@@ -68,7 +68,7 @@ internal fun ToolWindowsPopup(
     val viewModel = viewModel { ToolWindowsPopupViewModel(items) }
     val uiState by viewModel.uiState.collectAsState()
     val search = rememberTextFieldState()
-    val rows = remember(uiState.activeItems, uiState.newItems) { uiState.toRows() }
+    val rows = remember(uiState.activeItems, uiState.recentItems, uiState.newItems) { uiState.toRows() }
 
     LaunchedEffect(search, viewModel) {
         snapshotFlow { search.text.toString() }.collect(viewModel::setQuery)
@@ -264,6 +264,10 @@ private fun ToolWindowsUiState.toRows(): List<PopupRow> = buildList {
     if (activeItems.isNotEmpty()) {
         add(PopupRow.Section(ToolsFleetBundle.message("popup.section.active")))
         activeItems.mapTo(this, PopupRow::Item)
+    }
+    if (recentItems.isNotEmpty()) {
+        add(PopupRow.Section(ToolsFleetBundle.message("popup.section.recent")))
+        recentItems.mapTo(this, PopupRow::Item)
     }
     if (newItems.isNotEmpty()) {
         add(PopupRow.Section(ToolsFleetBundle.message("popup.section.new")))

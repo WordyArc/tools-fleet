@@ -49,6 +49,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
                     title = toolWindow.stripeTitle.ifBlank { toolWindow.id },
                     icon = toolWindow.icon,
                     isVisible = toolWindow.isVisible,
+                    hasBeenOpened = toolWindow.isVisible || toolWindow.contentManagerIfCreated != null,
                     isAvailable = toolWindow.isAvailable,
                 )
             }
