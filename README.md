@@ -51,3 +51,7 @@ from **Tools | Tool Finder**.
 ## Requirements
 
 - IntelliJ Platform IDE version 2026.2 or later.
+
+## License
+
+[Apache License 2.0](LICENSE)

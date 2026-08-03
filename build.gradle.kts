@@ -47,6 +47,12 @@ tasks.test {
     systemProperty("idea.suppressed.plugins.id", "com.jetbrains.station")
 }
 
+tasks.jar {
+    from("LICENSE") {
+        into("META-INF")
+    }
+}
+
 intellijPlatform {
     pluginConfiguration {
         ideaVersion {
