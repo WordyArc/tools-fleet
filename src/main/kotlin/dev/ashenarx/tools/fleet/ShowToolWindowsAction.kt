@@ -6,12 +6,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.intellij.ide.actions.ActivateToolWindowAction
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
+import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.WindowManager
 import dev.ashenarx.tools.fleet.settings.ToolFinderSettings
@@ -40,6 +43,8 @@ class ShowToolWindowsAction : DumbAwareAction() {
 
         val manager = ToolWindowManager.getInstance(project)
         val settings = service<ToolFinderSettings>()
+        // Sampled before the popup takes focus, so it still reflects where the user was working.
+        val focusedToolWindowId = manager.activeToolWindowId?.takeUnless { manager.isEditorComponentActive }
         val items = manager.toolWindowIds
             .mapNotNull(manager::getToolWindow)
             .filter { it.isAvailable || settings.showUnavailableToolWindows }
@@ -49,15 +54,17 @@ class ShowToolWindowsAction : DumbAwareAction() {
                     title = toolWindow.stripeTitle.ifBlank { toolWindow.id },
                     icon = toolWindow.icon,
                     isVisible = toolWindow.isVisible,
+                    isActive = toolWindow.id == focusedToolWindowId,
                     hasBeenOpened = toolWindow.isVisible || toolWindow.contentManagerIfCreated != null,
                     isAvailable = toolWindow.isAvailable,
+                    shortcut = toolWindow.activationShortcut(),
                 )
             }
             .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, ToolWindowItem::title))
 
         val windowSize = WindowManager.getInstance().getFrame(project)?.size
         val popupSize = windowSize?.let(::popupSizeFor) ?: DEFAULT_POPUP_SIZE
-        var selectedId: String? = null
+        var selected: ToolWindowItem? = null
         var popup: JBPopup? = null
         val viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore = ViewModelStore()
@@ -71,8 +78,8 @@ class ShowToolWindowsAction : DumbAwareAction() {
                         showHints = settings.showShortcutHints,
                         onClose = { popup?.cancel() },
                         onCloseToolWindow = { id -> manager.getToolWindow(id)?.hide() },
-                        onSelect = { id ->
-                            selectedId = id
+                        onSelect = { item ->
+                            selected = item
                             popup?.cancel()
                         },
                     )
@@ -87,7 +94,10 @@ class ShowToolWindowsAction : DumbAwareAction() {
             created.setFinalRunnable {
                 if (activePopup === created) activePopup = null
                 viewModelStoreOwner.viewModelStore.clear()
-                selectedId?.let { manager.getToolWindow(it)?.activate(null) }
+                selected?.let { item ->
+                    val toolWindow = manager.getToolWindow(item.id) ?: return@let
+                    if (item.isActive) toolWindow.hide() else toolWindow.activate(null)
+                }
             }
             created.showCenteredInCurrentWindow(project)
         }
@@ -105,3 +115,6 @@ class ShowToolWindowsAction : DumbAwareAction() {
             .setResizable(false)
             .createPopup()
 }
+
+private fun ToolWindow.activationShortcut(): String? =
+    KeymapUtil.getShortcutTextOrNull(ActivateToolWindowAction.Manager.getActionIdForToolWindow(id))

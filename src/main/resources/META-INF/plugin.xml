@@ -7,12 +7,13 @@
         Find and open IDE tool windows from a keyboard-driven popup.<br/>
         <br/>
         Press <kbd>Ctrl+&#92;</kbd> (<kbd>Cmd+&#92;</kbd> on macOS) to open Tool Finder, and again to close it.
-        Type to filter tool windows by name or ID. The list separates active, recent and new tool windows.<br/>
+        Type to filter tool windows by name or ID. The list separates active, recent and new tool windows, and each
+        row shows the tool window's own IDE shortcut when it has one.<br/>
         <br/>
         <b>Shortcuts</b>
         <ul>
             <li><kbd>Up</kbd> / <kbd>Down</kbd> - move the selection</li>
-            <li><kbd>Enter</kbd> - activate the selected tool window</li>
+            <li><kbd>Enter</kbd> - activate the selected tool window, or hide it when it is the focused one</li>
             <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> - hide the selected active tool window while the search
                 field is empty</li>
             <li><kbd>Esc</kbd> - clear the search, then close the popup</li>

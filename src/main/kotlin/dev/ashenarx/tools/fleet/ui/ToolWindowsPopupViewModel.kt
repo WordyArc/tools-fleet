@@ -43,7 +43,7 @@ internal class ToolWindowsPopupViewModel(
 
         val id = state.activeItems[activeIndex].id
         val updatedItems = itemState.value.map { item ->
-            if (item.id == id) item.copy(isVisible = false, hasBeenOpened = true) else item
+            if (item.id == id) item.copy(isVisible = false, isActive = false, hasBeenOpened = true) else item
         }
         itemState.value = updatedItems
 
@@ -66,8 +66,14 @@ internal data class ToolWindowsUiState(
     val isEmpty: Boolean
         get() = activeItems.isEmpty() && recentItems.isEmpty() && newItems.isEmpty()
 
+    val selectedItem: ToolWindowItem?
+        get() = selectableItems.firstOrNull { it.id == selectedId }
+
     val isSelectedVisible: Boolean
         get() = activeItems.any { it.id == selectedId }
+
+    val isSelectedActive: Boolean
+        get() = selectedItem?.isActive == true
 }
 
 private fun List<ToolWindowItem>.toUiState(

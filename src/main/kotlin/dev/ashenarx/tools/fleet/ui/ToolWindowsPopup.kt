@@ -69,7 +69,7 @@ internal fun ToolWindowsPopup(
     showHints: Boolean,
     onClose: () -> Unit,
     onCloseToolWindow: (String) -> Unit,
-    onSelect: (String) -> Unit,
+    onSelect: (ToolWindowItem) -> Unit,
 ) {
     val viewModel = viewModel { ToolWindowsPopupViewModel(items) }
     val uiState by viewModel.uiState.collectAsState()
@@ -113,7 +113,7 @@ internal fun ToolWindowsPopup(
                         }
 
                         Key.Enter -> {
-                            uiState.selectedId?.let(onSelect)
+                            uiState.selectedItem?.let(onSelect)
                             true
                         }
 
@@ -154,6 +154,7 @@ internal fun ToolWindowsPopup(
 
         if (showHints) {
             HintFooter(
+                hidesOnOpen = uiState.isSelectedActive,
                 canHide = search.text.isEmpty() && uiState.isSelectedVisible,
                 canClear = search.text.isNotEmpty(),
             )
@@ -162,7 +163,7 @@ internal fun ToolWindowsPopup(
 }
 
 @Composable
-private fun HintFooter(canHide: Boolean, canClear: Boolean) {
+private fun HintFooter(hidesOnOpen: Boolean, canHide: Boolean, canClear: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
             Modifier
@@ -176,8 +177,8 @@ private fun HintFooter(canHide: Boolean, canClear: Boolean) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Hint("↑↓", ToolsFleetBundle.message("popup.hint.navigate"))
-            Hint("↵", ToolsFleetBundle.message("popup.hint.open"))
-            if (canHide) Hint("⌫", ToolsFleetBundle.message("popup.hint.hide"))
+            Hint("↵", ToolsFleetBundle.message(if (hidesOnOpen) "popup.hint.hide" else "popup.hint.open"))
+            if (canHide && !hidesOnOpen) Hint("⌫", ToolsFleetBundle.message("popup.hint.hide"))
             Hint("Esc", ToolsFleetBundle.message(if (canClear) "popup.hint.clear" else "popup.hint.close"))
         }
     }
@@ -198,7 +199,7 @@ private fun Hint(key: String, label: String) {
 private fun ToolWindowRows(
     rows: List<PopupRow>,
     selectedId: String?,
-    onSelect: (String) -> Unit,
+    onSelect: (ToolWindowItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -217,7 +218,7 @@ private fun ToolWindowRows(
                 is PopupRow.Item -> ToolWindowRow(
                     item = row.value,
                     selected = row.value.id == selectedId,
-                    onClick = { if (row.value.isAvailable) onSelect(row.value.id) },
+                    onClick = { if (row.value.isAvailable) onSelect(row.value) },
                 )
             }
         }
@@ -270,7 +271,12 @@ private fun ToolWindowRow(item: ToolWindowItem, selected: Boolean, onClick: () -
 
         val matchBackground = retrieveColorOrUnspecified("SearchMatch.startBackground")
         val title = remember(item, matchBackground) { item.highlightedTitle(matchBackground) }
-        Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+
+        item.shortcut?.let { shortcut ->
+            Spacer(Modifier.width(8.dp))
+            Text(shortcut, color = JewelTheme.globalColors.text.info, maxLines = 1)
+        }
     }
 }
 
