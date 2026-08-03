@@ -6,7 +6,7 @@
     <description><![CDATA[
         Find and open IDE tool windows from a keyboard-driven popup.<br/>
         <br/>
-        Press <kbd>Ctrl+Shift+T</kbd> (<kbd>Cmd+Shift+T</kbd> on macOS) to open Tool Finder, and again to close it.
+        Press <kbd>Ctrl+&#92;</kbd> (<kbd>Cmd+&#92;</kbd> on macOS) to open Tool Finder, and again to close it.
         Type to filter tool windows by name or ID. The list separates active, recent and new tool windows.<br/>
         <br/>
         <b>Shortcuts</b>
@@ -48,8 +48,7 @@
                 text="Tool Windows"
                 description="Find and open IDE tool windows">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift T"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl BACK_SLASH"/>
         </action>
     </actions>
 </idea-plugin>
