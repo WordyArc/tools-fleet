@@ -60,6 +60,17 @@ class ToolWindowsPopupViewModelTest {
     }
 
     @Test
+    fun `better matches are ranked before weaker ones`() = timeoutRunBlocking {
+        val viewModel = ToolWindowsPopupViewModel(listOf(item("Logging"), item("Git"), item("Terminal")))
+
+        viewModel.setQuery("gi")
+
+        val state = viewModel.uiState.first { it.newItems.size == 2 }
+        assertEquals(listOf("Git", "Logging"), state.newItems.map(ToolWindowItem::id))
+        assertEquals("Git", state.selectedId)
+    }
+
+    @Test
     fun `matched title fragments are highlighted`() = timeoutRunBlocking {
         val viewModel = ToolWindowsPopupViewModel(listOf(item("Terminal"), item("Git")))
 
