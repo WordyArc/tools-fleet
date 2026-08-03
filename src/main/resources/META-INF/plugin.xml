@@ -2,11 +2,34 @@
     <id>dev.ashenarx.tools.fleet</id>
     <name>Tool Finder</name>
     <vendor email="ashenarx@gmail.com" url="https://github.com/WordyArc">ashenarx</vendor>
+
     <description><![CDATA[
-        Search and open every available IDE tool window from a single keyboard-driven popup.
-        Open the popup with <kbd>Ctrl+Shift+T</kbd> (<kbd>Cmd+Shift+T</kbd> on macOS), type to filter the list, and use
-        <kbd>Up</kbd>, <kbd>Down</kbd>, and <kbd>Enter</kbd> to activate a tool window.
+        Find and open IDE tool windows from a keyboard-driven popup.<br/>
+        <br/>
+        Press <kbd>Ctrl+Shift+T</kbd> (<kbd>Cmd+Shift+T</kbd> on macOS) to open Tool Finder, and again to close it.
+        Type to filter tool windows by name or ID. The list separates active, recent and new tool windows.<br/>
+        <br/>
+        <b>Shortcuts</b>
+        <ul>
+            <li><kbd>Up</kbd> / <kbd>Down</kbd> - move the selection</li>
+            <li><kbd>Enter</kbd> - activate the selected tool window</li>
+            <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> - hide the selected active tool window while the search
+                field is empty</li>
+            <li><kbd>Esc</kbd> - clear the search, then close the popup</li>
+        </ul>
+        Unavailable tool windows can be included under <b>Settings | Tools | Tool Finder</b>. They are shown dimmed
+        and cannot be activated in the current context.<br/>
+        <br/>
+        The shortcut can be changed under <b>Settings | Keymap | Tool Windows</b>. The action is also available from
+        <b>Tools | Tool Windows</b>.<br/>
+        <br/>
+        <img src="https://raw.githubusercontent.com/WordyArc/tools-fleet/master/docs/images/popup.svg"
+             alt="Tool Finder popup placeholder" width="640"/><br/>
+        <br/>
+        <img src="https://raw.githubusercontent.com/WordyArc/tools-fleet/master/docs/images/search.svg"
+             alt="Tool Finder search placeholder" width="640"/>
     ]]></description>
+
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.compose</depends>
     <resource-bundle>messages.ToolsFleetBundle</resource-bundle>
@@ -23,7 +46,7 @@
         <action id="ToolsFleet.ShowToolWindows"
                 class="dev.ashenarx.tools.fleet.ShowToolWindowsAction"
                 text="Tool Windows"
-                description="Search and open IDE tool windows">
+                description="Find and open IDE tool windows">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift T"/>

@@ -52,5 +52,31 @@ intellijPlatform {
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
         }
+
+        changeNotes = providers.fileContents(layout.projectDirectory.file("CHANGELOG.md"))
+            .asText
+            .map { changelog ->
+                changelog.lineSequence()
+                    .dropWhile { !it.startsWith("## ") }
+                    .drop(1)
+                    .takeWhile { !it.startsWith("## ") }
+                    .map(String::trim)
+                    .filter { it.startsWith("- ") }
+                    .joinToString(separator = "", prefix = "<ul>", postfix = "</ul>") {
+                        "<li>${it.removePrefix("- ")}</li>"
+                    }
+            }
+    }
+
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    pluginVerification {
+        ides {
+            recommended()
+        }
     }
 }
