@@ -6,8 +6,9 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import dev.ashenarx.tools.fleet.ToolsFleetBundle
+import dev.ashenarx.tools.fleet.ToolsFleetBundle.message
 
-internal class ToolFinderConfigurable : BoundConfigurable(ToolsFleetBundle.message("settings.title")) {
+internal class ToolFinderConfigurable : BoundConfigurable(message("settings.title")) {
     override fun createPanel(): DialogPanel {
         val settings = service<ToolFinderSettings>()
 
@@ -15,7 +16,7 @@ internal class ToolFinderConfigurable : BoundConfigurable(ToolsFleetBundle.messa
             row {
                 checkBox(ToolsFleetBundle.message("settings.show.unavailable"))
                     .bindSelected(settings::showUnavailableToolWindows)
-                    .comment(ToolsFleetBundle.message("settings.show.unavailable.comment"))
+                    .comment(message("settings.show.unavailable.comment"))
             }
         }
     }
