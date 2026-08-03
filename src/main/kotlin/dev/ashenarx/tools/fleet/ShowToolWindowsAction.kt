@@ -39,10 +39,10 @@ class ShowToolWindowsAction : DumbAwareAction() {
         }
 
         val manager = ToolWindowManager.getInstance(project)
-        val showUnavailable = service<ToolFinderSettings>().showUnavailableToolWindows
+        val settings = service<ToolFinderSettings>()
         val items = manager.toolWindowIds
             .mapNotNull(manager::getToolWindow)
-            .filter { it.isAvailable || showUnavailable }
+            .filter { it.isAvailable || settings.showUnavailableToolWindows }
             .map { toolWindow ->
                 ToolWindowItem(
                     id = toolWindow.id,
@@ -68,6 +68,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
                 SwingBridgeTheme {
                     ToolWindowsPopup(
                         items = items,
+                        showHints = settings.showShortcutHints,
                         onClose = { popup?.cancel() },
                         onCloseToolWindow = { id -> manager.getToolWindow(id)?.hide() },
                         onSelect = { id ->

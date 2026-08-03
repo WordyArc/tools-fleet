@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 @TestApplication
@@ -95,6 +96,18 @@ class ToolWindowsPopupViewModelTest {
         assertFalse(state.recentItems.first().isVisible)
         assertEquals(listOf(inactive), state.newItems)
         assertEquals("second", state.selectedId)
+    }
+
+    @Test
+    fun `selection tracks whether the selected item can be hidden`() = timeoutRunBlocking {
+        val active = item("active", isVisible = true)
+        val inactive = item("inactive")
+        val viewModel = ToolWindowsPopupViewModel(listOf(active, inactive))
+
+        assertTrue(viewModel.uiState.value.isSelectedVisible)
+
+        viewModel.moveSelection(1)
+        assertFalse(viewModel.uiState.first { it.selectedId == "inactive" }.isSelectedVisible)
     }
 
     @Test

@@ -65,6 +65,9 @@ internal data class ToolWindowsUiState(
 ) {
     val isEmpty: Boolean
         get() = activeItems.isEmpty() && recentItems.isEmpty() && newItems.isEmpty()
+
+    val isSelectedVisible: Boolean
+        get() = activeItems.any { it.id == selectedId }
 }
 
 private fun List<ToolWindowItem>.toUiState(

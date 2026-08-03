@@ -18,6 +18,11 @@ internal class ToolFinderConfigurable : BoundConfigurable(message("settings.titl
                     .bindSelected(settings::showUnavailableToolWindows)
                     .comment(message("settings.show.unavailable.comment"))
             }
+            row {
+                checkBox(ToolsFleetBundle.message("settings.show.hints"))
+                    .bindSelected(settings::showShortcutHints)
+                    .comment(message("settings.show.hints.comment"))
+            }
         }
     }
 }
