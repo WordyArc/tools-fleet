@@ -19,9 +19,9 @@ internal class ToolFinderConfigurable : BoundConfigurable(message("settings.titl
                     .comment(message("settings.show.unavailable.comment"))
             }
             row {
-                checkBox(ToolsFleetBundle.message("settings.show.hints"))
-                    .bindSelected(settings::showShortcutHints)
-                    .comment(message("settings.show.hints.comment"))
+                checkBox(ToolsFleetBundle.message("settings.show.shortcuts"))
+                    .bindSelected(settings::showToolWindowShortcuts)
+                    .comment(message("settings.show.shortcuts.comment"))
             }
         }
     }

@@ -68,12 +68,6 @@ internal data class ToolWindowsUiState(
 
     val selectedItem: ToolWindowItem?
         get() = selectableItems.firstOrNull { it.id == selectedId }
-
-    val isSelectedVisible: Boolean
-        get() = activeItems.any { it.id == selectedId }
-
-    val isSelectedActive: Boolean
-        get() = selectedItem?.isActive == true
 }
 
 private fun List<ToolWindowItem>.toUiState(

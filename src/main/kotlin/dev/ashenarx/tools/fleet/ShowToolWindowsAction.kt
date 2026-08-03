@@ -57,7 +57,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
                     isActive = toolWindow.id == focusedToolWindowId,
                     hasBeenOpened = toolWindow.isVisible || toolWindow.contentManagerIfCreated != null,
                     isAvailable = toolWindow.isAvailable,
-                    shortcut = toolWindow.activationShortcut(),
+                    shortcut = if (settings.showToolWindowShortcuts) toolWindow.activationShortcut() else null,
                 )
             }
             .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, ToolWindowItem::title))
@@ -75,7 +75,6 @@ class ShowToolWindowsAction : DumbAwareAction() {
                 SwingBridgeTheme {
                     ToolWindowsPopup(
                         items = items,
-                        showHints = settings.showShortcutHints,
                         onClose = { popup?.cancel() },
                         onCloseToolWindow = { id -> manager.getToolWindow(id)?.hide() },
                         onSelect = { item ->

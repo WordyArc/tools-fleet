@@ -99,29 +99,17 @@ class ToolWindowsPopupViewModelTest {
     }
 
     @Test
-    fun `selection tracks whether the selected item can be hidden`() = timeoutRunBlocking {
-        val active = item("active", isVisible = true)
-        val inactive = item("inactive")
-        val viewModel = ToolWindowsPopupViewModel(listOf(active, inactive))
-
-        assertTrue(viewModel.uiState.value.isSelectedVisible)
-
-        viewModel.moveSelection(1)
-        assertFalse(viewModel.uiState.first { it.selectedId == "inactive" }.isSelectedVisible)
-    }
-
-    @Test
     fun `hiding the focused item clears its active flag`() = timeoutRunBlocking {
         val focused = item("focused", isVisible = true, isActive = true)
         val viewModel = ToolWindowsPopupViewModel(listOf(focused))
-        assertTrue(viewModel.uiState.value.isSelectedActive)
+        assertTrue(viewModel.uiState.value.selectedItem!!.isActive)
 
         assertEquals("focused", viewModel.closeSelected())
 
         val state = viewModel.uiState.first { it.activeItems.isEmpty() }
         assertEquals("focused", state.selectedId)
-        assertFalse(state.isSelectedActive)
         assertFalse(state.selectedItem!!.isActive)
+        assertFalse(state.recentItems.single().isActive)
     }
 
     @Test

@@ -18,10 +18,8 @@
                 field is empty</li>
             <li><kbd>Esc</kbd> - clear the search, then close the popup</li>
         </ul>
-        The popup shows the available keyboard shortcuts at the bottom.<br/>
-        <br/>
         Unavailable tool windows can be included under <b>Settings | Tools | Tool Finder</b>. They are shown dimmed
-        and cannot be activated in the current context. The same page toggles the keyboard hints.<br/>
+        and cannot be activated in the current context. The same page toggles the tool window shortcuts.<br/>
         <br/>
         The shortcut can be changed under <b>Settings | Keymap</b> by searching for <b>Tool Finder</b>. The action is
         also available from <b>Tools | Tool Finder</b>.<br/>

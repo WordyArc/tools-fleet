@@ -66,7 +66,6 @@ import javax.swing.Icon as SwingIcon
 @Composable
 internal fun ToolWindowsPopup(
     items: List<ToolWindowItem>,
-    showHints: Boolean,
     onClose: () -> Unit,
     onCloseToolWindow: (String) -> Unit,
     onSelect: (ToolWindowItem) -> Unit,
@@ -137,7 +136,7 @@ internal fun ToolWindowsPopup(
         )
 
         if (uiState.isEmpty) {
-            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = ToolsFleetBundle.message("popup.empty"),
                     color = JewelTheme.globalColors.text.disabled,
@@ -148,50 +147,9 @@ internal fun ToolWindowsPopup(
                 rows = rows,
                 selectedId = uiState.selectedId,
                 onSelect = onSelect,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
             )
         }
-
-        if (showHints) {
-            HintFooter(
-                hidesOnOpen = uiState.isSelectedActive,
-                canHide = search.text.isEmpty() && uiState.isSelectedVisible,
-                canClear = search.text.isNotEmpty(),
-            )
-        }
-    }
-}
-
-@Composable
-private fun HintFooter(hidesOnOpen: Boolean, canHide: Boolean, canClear: Boolean) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(JewelTheme.globalColors.borders.normal),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Hint("↑↓", ToolsFleetBundle.message("popup.hint.navigate"))
-            Hint("↵", ToolsFleetBundle.message(if (hidesOnOpen) "popup.hint.hide" else "popup.hint.open"))
-            if (canHide && !hidesOnOpen) Hint("⌫", ToolsFleetBundle.message("popup.hint.hide"))
-            Hint("Esc", ToolsFleetBundle.message(if (canClear) "popup.hint.clear" else "popup.hint.close"))
-        }
-    }
-}
-
-@Composable
-private fun Hint(key: String, label: String) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(key, color = JewelTheme.globalColors.text.info)
-        Text(label, color = JewelTheme.globalColors.text.disabled)
     }
 }
 

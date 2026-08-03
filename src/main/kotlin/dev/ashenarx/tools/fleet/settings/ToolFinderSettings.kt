@@ -20,14 +20,14 @@ internal class ToolFinderSettings : SimplePersistentStateComponent<ToolFinderSet
             state.showUnavailableToolWindows = value
         }
 
-    var showShortcutHints: Boolean
-        get() = state.showShortcutHints
+    var showToolWindowShortcuts: Boolean
+        get() = state.showToolWindowShortcuts
         set(value) {
-            state.showShortcutHints = value
+            state.showToolWindowShortcuts = value
         }
 
     internal class State : BaseState() {
         var showUnavailableToolWindows by property(false)
-        var showShortcutHints by property(false)
+        var showToolWindowShortcuts by property(true)
     }
 }

@@ -40,7 +40,7 @@ On macOS, the default shortcut is <kbd>Cmd</kbd>+<kbd>&#92;</kbd>.
 Open **Settings | Tools | Tool Finder** to include unavailable tool windows in the list. They are shown dimmed and
 cannot be activated in the current context.
 
-The same page toggles the keyboard hints shown at the bottom of the popup. They are enabled by default.
+The same page toggles the tool window shortcuts shown next to each name. They are enabled by default.
 
 The shortcut can be changed under **Settings | Keymap** by searching for **Tool Finder**. The action is also available
 from **Tools | Tool Finder**.
