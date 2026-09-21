@@ -2,6 +2,10 @@
 
 The topmost section is published as the plugin's change notes.
 
+## 1.0.1
+
+- The popup responds to the keyboard and the mouse again on 2026.2.3, where typing, <kbd>Up</kbd>, <kbd>Down</kbd> and <kbd>Enter</kbd> had stopped working.
+
 ## 1.0.0
 
 - Initial release.

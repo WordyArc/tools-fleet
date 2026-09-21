@@ -3,6 +3,7 @@
 package dev.ashenarx.tools.fleet
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.awt.ComposePanel
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -17,6 +18,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.WindowManager
+import com.intellij.util.ui.UIUtil
 import dev.ashenarx.tools.fleet.settings.ToolFinderSettings
 import dev.ashenarx.tools.fleet.ui.DEFAULT_POPUP_SIZE
 import dev.ashenarx.tools.fleet.ui.ToolWindowsPopup
@@ -104,7 +106,7 @@ class ShowToolWindowsAction : DumbAwareAction() {
 
     private fun createPopup(panel: JComponent): JBPopup =
         JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(panel, panel)
+            .createComponentPopupBuilder(panel, panel.composeFocusTarget())
             .setRequestFocus(true)
             .setFocusable(true)
             .setCancelKeyEnabled(false)
@@ -114,6 +116,9 @@ class ShowToolWindowsAction : DumbAwareAction() {
             .setResizable(false)
             .createPopup()
 }
+
+internal fun JComponent.composeFocusTarget(): JComponent =
+    UIUtil.findComponentOfType(this, ComposePanel::class.java) ?: this
 
 private fun ToolWindow.activationShortcut(): String? =
     KeymapUtil.getShortcutTextOrNull(ActivateToolWindowAction.Manager.getActionIdForToolWindow(id))
