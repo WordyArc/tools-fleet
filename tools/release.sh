@@ -11,7 +11,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 readonly PROJECT_NAME=tools-fleet
 readonly BRANCH=master
-readonly SIGNING_DIR=signing
+readonly SIGNING_DIR="$HOME/develop/plugin-signing"
 
 step() { printf '\n==> %s\n' "$1"; }
 
@@ -47,12 +47,15 @@ git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1 && fail "Tag $TAG
 top_section=$(grep -m1 '^## ' CHANGELOG.md | sed 's/^## //')
 [ "$top_section" = "$VERSION" ] || fail "CHANGELOG.md starts with section '$top_section', not '$VERSION'."
 
-for file in chain.crt private.pem; do
+for file in chain.crt private-encrypted.pem; do
     [ -f "$SIGNING_DIR/$file" ] || fail "Missing $SIGNING_DIR/$file. See $SIGNING_DIR/README.md."
 done
 
-zip_signer=$(find "$HOME/.gradle/caches/modules-2" -name 'marketplace-zip-signer-*-cli.jar' | sort -V | tail -1)
-[ -n "$zip_signer" ] || fail "Marketplace zip signer not found. Run ./gradlew signPlugin once."
+if [ -z "${PRIVATE_KEY_PASSWORD:-}" ]; then
+    read -r -s -p 'Passphrase for private-encrypted.pem: ' PRIVATE_KEY_PASSWORD || true
+    printf '\n'
+    [ -n "$PRIVATE_KEY_PASSWORD" ] || fail "An empty passphrase cannot unlock the signing key."
+fi
 
 current_version=$(sed -n 's/^pluginVersion *= *//p' gradle.properties)
 [ -n "$current_version" ] || fail "Could not read pluginVersion from gradle.properties."
@@ -78,10 +81,16 @@ step "Running the IntelliJ Plugin Verifier"
 
 step "Signing"
 CERTIFICATE_CHAIN="$(cat "$SIGNING_DIR/chain.crt")" \
-    PRIVATE_KEY="$(cat "$SIGNING_DIR/private.pem")" \
+    PRIVATE_KEY="$(cat "$SIGNING_DIR/private-encrypted.pem")" \
+    PRIVATE_KEY_PASSWORD="$PRIVATE_KEY_PASSWORD" \
     ./gradlew signPlugin --console=plain
 
 step "Verifying the signature"
+# signPlugin resolves the zip signer into the Gradle cache. The Gradle verifyPluginSignature
+# task passes the certificate both as a file and as a stray positional argument, which the CLI
+# rejects, so the signature is checked with that CLI directly.
+zip_signer=$({ find "$HOME/.gradle/caches/modules-2" -name 'marketplace-zip-signer-*-cli.jar' 2>/dev/null || true; } | sort -V | tail -1)
+[ -n "$zip_signer" ] || fail "marketplace-zip-signer CLI did not appear in the Gradle cache after signPlugin."
 [ -f "$SIGNED_ZIP" ] || fail "$SIGNED_ZIP was not produced."
 java -cp "$zip_signer" org.jetbrains.zip.signer.ZipSigningTool verify \
     -in "$SIGNED_ZIP" -cert "$SIGNING_DIR/chain.crt" || fail "The plugin signature is invalid."
